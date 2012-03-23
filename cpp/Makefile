@@ -138,6 +138,12 @@ TEMPS += endian
 endian: endian.C
 	g++ -std=c++0x endian.C -o endian
 
+TEMPS += fork_test
+fork_test: fork_test.C
+	g++ -std=c++0x fork_test.C -o fork_test
+fork-test: fork_test
+	./fork_test
+
 #----( general )---------------------------------------------------------------
 
 FORCE:
