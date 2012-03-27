@@ -1,3 +1,4 @@
 core
 cpp/*.o
+cpp/*_test
 

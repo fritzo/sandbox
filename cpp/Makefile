@@ -144,6 +144,12 @@ fork_test: fork_test.C
 fork-test: fork_test
 	./fork_test
 
+TEMPS += version_test
+version_test: version_test.C
+	g++ -std=c++0x version_test.C -o version_test
+version-test: version_test
+	./version_test
+
 #----( general )---------------------------------------------------------------
 
 FORCE:
