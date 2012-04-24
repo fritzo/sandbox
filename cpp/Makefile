@@ -152,7 +152,8 @@ version-test: version_test
 
 TEMPS += type_dispatch
 type_dispatch: type_dispatch.C
-	g++ -std=c++0x type_dispatch.C -o type_dispatch
+	@#g++ -std=c++0x type_dispatch.C -o type_dispatch
+	g++ type_dispatch.C -o type_dispatch
 type-dispatch: type_dispatch
 	./type_dispatch
 

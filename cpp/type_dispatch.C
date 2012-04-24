@@ -1,8 +1,12 @@
 
 #include <string>
 #include <iostream>
+#include <initializer_list>
 
 using std::string;
+using std::cout;
+using std::cerr;
+using std::endl;
 
 
 enum TypeId
@@ -20,53 +24,67 @@ struct Baa { static const string name; };
 const string Baa::name = "baa";
 
 
-template<int T>
-struct Type {}; // abstract
-
+// static id -> type lookup table
+template<int T> struct Type {};
 template<> struct Type<BOO> { typedef Boo t; };
 template<> struct Type<BAA> { typedef Baa t; };
 
 
-template<class Body, int type_id>
-struct TypeCase
-{
-    TypeCase (Body & body)
-    {
-        std::cerr << "Unknown case: " << type_id << std::endl;
-    }
-}; // abstract
-
+// stateless body
 template<class Body>
-void type_dispatch (Body & body, int i)
+inline void switch_ (int i)
 {
     switch (i) {
-        case BOO: { TypeCase<Body, BOO> x(body); } break;
-        case BAA: { TypeCase<Body, BAA> x(body); } break;
+        case BOO: { Body::case_((Boo *) NULL); } break;
+        case BAA: { Body::case_((Baa *) NULL); } break;
         default:
-            std::cerr << "Unknown case: " << i << std::endl;
+            cerr << "Unknown case: " << i << endl;
+    }
+}
+
+// stateful body
+template<class Body>
+inline void switch_ (int i, Body body)
+{
+    switch (i) {
+        case BOO: { body.Body::case_((Boo *) NULL); } break;
+        case BAA: { body.Body::case_((Baa *) NULL); } break;
+        default:
+            cerr << "Unknown case: " << i << endl;
     }
 }
 
 
 struct TestBody
 {
-    int i;
-};
-template<int type_id>
-struct TypeCase<TestBody, type_id>
-{
-    TypeCase (TestBody & body)
+    int ii;
+
+    template<class type>
+    void case_ (type *)
     {
-        std::cout << "id = " << body.i
-            << ", name = " << Type<type_id>::t::name << std::endl;
+        cout << "ii = " << ii << ", name = " << type::name << endl;
     }
 };
+
+struct TestBody2
+{
+    template<class type>
+    static void case_ (type *)
+    {
+        cout << "name = " << type::name << endl;
+    }
+};
+
 
 int main ()
 {
     for (int i = 0; i < type_count; ++i) {
-        TestBody body = {i};
-        type_dispatch(body, i);
+        TestBody body = {i * i};
+        switch_(i, body);
+    }
+
+    for (int i = 0; i < type_count; ++i) {
+        switch_<TestBody2>(i);
     }
 
     return 0;
